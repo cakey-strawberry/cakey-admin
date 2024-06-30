@@ -12,8 +12,10 @@
     "commitlint": "commitlint -e"
   },
   "dependencies": {
+    "jotai": "^2.8.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^5.3.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
