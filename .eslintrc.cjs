@@ -19,8 +19,8 @@ module.exports = {
   ignorePatterns: [
     "dist",
     ".eslintrc.cjs",
-    "commitlint.config.js",
-    "lint-staged.config.js",
+    "commitlint.config.cjs",
+    "lint-staged.config.cjs",
     "vite.config.ts",
   ],
   parser: "@typescript-eslint/parser",
