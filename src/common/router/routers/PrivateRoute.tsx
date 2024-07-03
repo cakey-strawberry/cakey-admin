@@ -9,7 +9,7 @@ import { landingPath } from "../paths/paths";
 export function PrivateRoute({ ...rest }: RouteProps) {
   const isAuthenticated = useAtomValue(authAtom);
 
-  console.log(isAuthenticated);
+  console.log("PrivateRoute", isAuthenticated);
 
   return isAuthenticated ? <Route {...rest} /> : <Redirect to={landingPath} />;
 }
