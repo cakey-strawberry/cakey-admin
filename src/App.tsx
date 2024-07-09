@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@mui/material/styles";
-import { BrowserRouter, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import { useAutoSignIn } from "@common/hooks/useAutoSignIn";
 import { dashboardPath, landingPath } from "@common/router/paths/paths";
@@ -25,6 +25,7 @@ function App() {
             path={dashboardPath}
             render={() => <DashboardRoutes />}
           />
+          <Route component={() => <>404</>} />
         </Switch>
       </ThemeProvider>
     </BrowserRouter>

@@ -18,18 +18,17 @@ export function SidebarLayout({ children, sidebar }: SidebarLayoutProps) {
 const Wrapper = styled("div")({
   display: "flex",
   flexDirection: "row",
-  height: "100vh",
-  overflow: "hidden",
 });
 
 const SideNavWrapper = styled("div")({
-  flex: "none",
+  position: "fixed",
   width: "16rem",
+  height: "100vh",
+  borderRight: "1px solid lightgray",
 });
 
 const ChildrenWrapper = styled("div")({
-  flexGrow: 1,
-  overflowY: "auto",
-  backgroundColor: "orange",
-  padding: "12px",
+  display: "flex",
+  flex: 1,
+  paddingLeft: "16rem",
 });

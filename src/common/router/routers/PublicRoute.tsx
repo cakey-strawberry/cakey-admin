@@ -4,14 +4,10 @@ import type { RouteProps } from "react-router-dom";
 
 import { authAtom } from "@common/store/atoms/authAtom";
 
-import { dashboardPath } from "../paths/paths";
+import { homePath } from "../paths/paths";
 
 export function PublicRoute({ ...rest }: RouteProps) {
   const isAuthenticated = useAtomValue(authAtom);
 
-  return isAuthenticated ? (
-    <Redirect to={dashboardPath} />
-  ) : (
-    <Route {...rest} />
-  );
+  return isAuthenticated ? <Redirect to={homePath} /> : <Route {...rest} />;
 }

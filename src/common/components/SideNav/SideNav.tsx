@@ -17,7 +17,7 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import logo from "@assets/logo.svg";
 import { ADMIN_TOKEN, DEV_ADMIN_TOKEN } from "@common/constants/constants";
 import {
-  dashboardPath,
+  homePath,
   reviewsPath,
   storesPath,
   usersPath,
@@ -54,19 +54,19 @@ export function SideNav() {
           >
             <StyledLink
               component={RouterLink}
-              to={dashboardPath}
+              to={homePath}
               underline={"none"}
-              isActive={location.pathname === dashboardPath}
+              isActive={location.pathname.includes(homePath)}
             >
               <ListItem disablePadding>
                 <ListItemButton>
                   <StyledListItemIcon
-                    isActive={location.pathname === dashboardPath}
+                    isActive={location.pathname.includes(homePath)}
                   >
                     <DashboardIcon />
                   </StyledListItemIcon>
                   <StyledListItemText
-                    isActive={location.pathname === dashboardPath}
+                    isActive={location.pathname.includes(homePath)}
                     primary="Dashboard"
                     primaryTypographyProps={{ fontSize: "14px" }}
                   />
