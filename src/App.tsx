@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@mui/material/styles";
+import { NavermapsProvider } from "react-naver-maps";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import { useAutoSignIn } from "@common/hooks/useAutoSignIn";
@@ -17,18 +18,22 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <Switch>
-          <PublicRoute exact path={landingPath} render={() => <Auth />} />
-          <PrivateRoute
-            path={dashboardPath}
-            render={() => <DashboardRoutes />}
-          />
-          <Route component={() => <>404</>} />
-        </Switch>
-      </ThemeProvider>
-    </BrowserRouter>
+    <NavermapsProvider
+      ncpClientId={import.meta.env.VITE_NAVER_CLOUD_PLATFORM_CLIENT_ID}
+    >
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <Switch>
+            <PublicRoute exact path={landingPath} render={() => <Auth />} />
+            <PrivateRoute
+              path={dashboardPath}
+              render={() => <DashboardRoutes />}
+            />
+            <Route component={() => <>404</>} />
+          </Switch>
+        </ThemeProvider>
+      </BrowserRouter>
+    </NavermapsProvider>
   );
 }
 

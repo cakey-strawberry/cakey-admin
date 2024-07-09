@@ -2,6 +2,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LinkIcon from "@mui/icons-material/Link";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import StoreIcon from "@mui/icons-material/Store";
 import {
   Typography,
   List,
@@ -16,6 +17,12 @@ import {
   Button,
   Paper,
 } from "@mui/material";
+import {
+  Container as MapDiv,
+  NaverMap,
+  Marker,
+  useNavermaps,
+} from "react-naver-maps";
 import { useHistory, Link as RouterLink } from "react-router-dom";
 
 import { PageHeader } from "@common/components/PageHeader/PageHeader";
@@ -38,6 +45,19 @@ const storeRequest = {
   createdBy: { name: "John Doe" },
   socialLinks: ["http://example.com", "http://example.org"],
 };
+
+function MyMap() {
+  const navermaps = useNavermaps();
+
+  return (
+    <NaverMap
+      defaultCenter={new navermaps.LatLng(37.3595704, 127.105399)}
+      defaultZoom={15}
+    >
+      <Marker defaultPosition={new navermaps.LatLng(37.3595704, 127.105399)} />
+    </NaverMap>
+  );
+}
 
 export function StoreRequest() {
   const history = useHistory();
@@ -101,7 +121,28 @@ export function StoreRequest() {
           </Typography>
           <List>
             <ListItem>
+              <ListItemIcon>
+                <StoreIcon />
+              </ListItemIcon>
               <ListItemText primary={storeRequest.address} />
+            </ListItem>
+            <ListItem>
+              <ListItemIcon>
+                <LocationOnIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={`Lat: ${storeRequest.loc.coordinates[1]}, Lng: ${storeRequest.loc.coordinates[0]}`}
+              />
+            </ListItem>
+            <ListItem>
+              <MapDiv
+                style={{
+                  width: "100%",
+                  height: "300px",
+                }}
+              >
+                <MyMap />
+              </MapDiv>
             </ListItem>
           </List>
         </PaperBox>
@@ -115,22 +156,6 @@ export function StoreRequest() {
               <StoreImage
                 src={storeRequest.thumbnail}
                 alt={storeRequest.name}
-              />
-            </ListItem>
-          </List>
-        </PaperBox>
-
-        <PaperBox variant="outlined">
-          <Typography variant="h6" gutterBottom>
-            좌표
-          </Typography>
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <LocationOnIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={`Lat: ${storeRequest.loc.coordinates[1]}, Lng: ${storeRequest.loc.coordinates[0]}`}
               />
             </ListItem>
           </List>
@@ -197,15 +222,17 @@ export function StoreRequest() {
             태그
           </Typography>
           <List>
-            {storeRequest.tags.map((tag, index) => (
-              <Chip
-                key={index}
-                label={tag}
-                sx={{
-                  marginRight: "8px",
-                }}
-              />
-            ))}
+            <ListItem>
+              {storeRequest.tags.map((tag, index) => (
+                <Chip
+                  key={index}
+                  label={tag}
+                  sx={{
+                    marginRight: "8px",
+                  }}
+                />
+              ))}
+            </ListItem>
           </List>
         </PaperBox>
       </GridContainer>
@@ -214,6 +241,7 @@ export function StoreRequest() {
           display: "flex",
           justifyContent: "flex-end",
           marginTop: "16px",
+          marginBottom: "32px",
         }}
       >
         <Button
@@ -236,7 +264,7 @@ export function StoreRequest() {
 
 const GridContainer = styled(Box)({
   display: "grid",
-  gridTemplateColumns: "repeat(1, 1fr)",
+  gridTemplateColumns: "repeat(2, 1fr)",
   gap: "16px",
 });
 
