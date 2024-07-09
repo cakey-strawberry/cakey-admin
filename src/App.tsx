@@ -1,37 +1,39 @@
-import { useState } from "react";
+import { ThemeProvider } from "@mui/material/styles";
+import { NavermapsProvider } from "react-naver-maps";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
-import viteLogo from "/vite.svg";
-
-import reactLogo from "@assets/react.svg";
-
-import "./App.css";
+import { useAutoSignIn } from "@common/hooks/useAutoSignIn";
+import { dashboardPath, landingPath } from "@common/router/paths/paths";
+import { PrivateRoute } from "@common/router/routers/PrivateRoute";
+import { PublicRoute } from "@common/router/routers/PublicRoute";
+import { theme } from "@common/theme/theme";
+import { Auth } from "@screens/Auth/Auth";
+import { DashboardRoutes } from "@screens/Dashboard/Routes";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [loading] = useAutoSignIn();
+
+  if (loading) {
+    return <></>;
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <NavermapsProvider
+      ncpClientId={import.meta.env.VITE_NAVER_CLOUD_PLATFORM_CLIENT_ID}
+    >
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <Switch>
+            <PublicRoute exact path={landingPath} render={() => <Auth />} />
+            <PrivateRoute
+              path={dashboardPath}
+              render={() => <DashboardRoutes />}
+            />
+            <Route component={() => <>404</>} />
+          </Switch>
+        </ThemeProvider>
+      </BrowserRouter>
+    </NavermapsProvider>
   );
 }
 
