@@ -106,7 +106,7 @@ export function StoreRequestSection() {
     <Link
       underline="none"
       component={RouterLink}
-      to={Uri.buildUrl({
+      to={Uri.buildLinkUrl({
         path: storeRequestPath,
         pathVariables: { storerequestId: 12 },
       })}

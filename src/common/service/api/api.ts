@@ -22,16 +22,31 @@ type PatchProps = RequestProps;
 
 type DeleteProps = Omit<RequestProps, "body">;
 
-class HTTPError extends Error {
-  readonly response: unknown;
-  readonly status: number;
-  readonly statusText: string;
+type ErrorResponseConstructorProps = {
+  status: number;
+  customErrorCode: string;
+  message: string | string[];
+  timestamp: string;
+};
 
-  constructor(status: number, statusText: string, response: unknown) {
-    super(statusText);
+export class ErrorResponse extends Error {
+  readonly status: number;
+  readonly customErrorCode: string = "";
+  readonly messages: string | string[] = "";
+  readonly timestamp: string = "";
+
+  constructor({
+    status,
+    customErrorCode,
+    message,
+    timestamp,
+  }: ErrorResponseConstructorProps) {
+    super(customErrorCode);
+
     this.status = status;
-    this.statusText = statusText;
-    this.response = response;
+    this.customErrorCode = customErrorCode;
+    this.messages = message;
+    this.timestamp = timestamp;
   }
 }
 
@@ -51,14 +66,18 @@ class APIClient {
     return this.adminToken;
   }
 
-  public setAdminToken(token: string) {
+  private setAdminToken(token: string) {
     this.adminToken = token;
     localStorage.setItem(import.meta.env.VITE_ADMIN_TOKEN, token);
   }
 
-  public unSetAdminToken() {
+  private unSetAdminToken() {
     this.adminToken = "";
     localStorage.removeItem(import.meta.env.VITE_ADMIN_TOKEN);
+  }
+
+  public applyCredentials({ token }: { token: string }) {
+    this.setAdminToken(token);
   }
 
   public purgeCredentials() {
@@ -181,7 +200,12 @@ class APIClient {
     const responseData = await response.json();
 
     if (!response.ok) {
-      throw new HTTPError(response.status, response.statusText, responseData);
+      throw new ErrorResponse({
+        status: response.status,
+        customErrorCode: responseData.customErrorCode,
+        message: responseData.message,
+        timestamp: responseData.timestamp,
+      });
     }
 
     return responseData as TResponse;

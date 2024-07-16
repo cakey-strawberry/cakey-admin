@@ -51,4 +51,21 @@ export class Uri {
 
     return url;
   }
+
+  public static buildLinkUrl({
+    path,
+    pathVariables = null,
+    queryParams = null,
+  }: BuildUrlOptions): string {
+    const interpolatedPath = this.interpolatePath(path, pathVariables);
+    const queryString = this.buildQueryParams(queryParams);
+
+    let url = `${interpolatedPath}`;
+
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+
+    return url;
+  }
 }

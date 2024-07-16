@@ -4,26 +4,46 @@ import { useSetAtom } from "jotai";
 import { FormEvent } from "react";
 
 import logo from "@assets/logo.svg";
-import { ADMIN_TOKEN, DEV_ADMIN_TOKEN } from "@common/constants/constants";
+import { api } from "@common/service/api/api";
 import { authAtom } from "@common/store/atoms/authAtom";
+
+import { useSignIn } from "./queries/useSignIn";
 
 export function Auth() {
   const setAuth = useSetAtom(authAtom);
+
+  const { mutate } = useSignIn();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    mutate(
+      {
+        params: {
+          id: data.get("adminId") as string,
+          code: data.get("password") as string,
+        },
+      },
+      {
+        onSuccess: (response) => {
+          const { adminToken } = response.data;
 
-    localStorage.setItem(
-      process.env.NODE_ENV === "development" ? DEV_ADMIN_TOKEN : ADMIN_TOKEN,
-      "1234",
+          api.applyCredentials({
+            token: adminToken,
+          });
+
+          setAuth(true);
+        },
+        onError: (error) => {
+          if (error.status >= 500) {
+            alert(`서버 에러입니다`);
+          } else {
+            alert(`로그인에 실패했습니다.`);
+          }
+        },
+      },
     );
-    setAuth(true);
   };
 
   return (

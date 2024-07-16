@@ -1,7 +1,13 @@
-type SignInPayload = {
+export type SignInPayload = {
   params: {
-    adminId: string;
-    password: string;
+    id: string;
+    code: string;
+  };
+};
+
+export type SignInResponse = {
+  data: {
+    adminToken: string;
   };
 };
 
@@ -10,7 +16,7 @@ import { AuthEndpointSet } from "@common/service/api/endpoints";
 
 export class AuthRepository {
   static async signIn({ params }: SignInPayload) {
-    return api.post({
+    return api.post<SignInResponse>({
       endpointSet: AuthEndpointSet.Admin.signIn,
       body: params,
     });
