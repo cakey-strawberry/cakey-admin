@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
 import { storeRequestPath } from "@common/router/paths/paths";
-import { generateUrl } from "@common/utils/\bgenerateUrl";
+import { Uri } from "@common/service/api/url";
 
 import { StoreRequestCard } from "../StoreRequestCard/StoreRequestCard";
 
@@ -106,7 +106,10 @@ export function StoreRequestSection() {
     <Link
       underline="none"
       component={RouterLink}
-      to={generateUrl(storeRequestPath, { storerequestId: 12 })}
+      to={Uri.buildUrl({
+        path: storeRequestPath,
+        pathVariables: { storerequestId: 12 },
+      })}
     >
       <Divider
         sx={{
