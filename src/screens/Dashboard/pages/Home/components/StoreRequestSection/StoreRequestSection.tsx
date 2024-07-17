@@ -1,132 +1,106 @@
-import { Divider, Link, Typography } from "@mui/material";
+import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 
+import { useIntersect } from "@common/hooks/useIntersect";
+import { StoreRequest } from "@common/repositories/admin/types";
 import { storeRequestPath } from "@common/router/paths/paths";
 import { Uri } from "@common/service/api/url";
 
+import { useStoreRequests } from "../../queries/useStoreRequests";
 import { StoreRequestCard } from "../StoreRequestCard/StoreRequestCard";
 
-const stores = [
-  {
-    _id: "1",
-    name: "어쩌구 저쩌구 스토어",
-    address:
-      "서울 특별시 뭐시기 저시기 서울 특별시 뭐시기 저시기서울 특별시 뭐시기 저시기서울 특별시 뭐시기 저시기서울 특별시 뭐시기 저시기",
-    tags: ["tag1", "tag2", "tag1", "tag2", "tag1", "tag2", "tag1", "tag2"],
-    thumbnail: "https://picsum.photos/400",
-    reviews: [],
-    loc: {
-      type: "Point",
-      coordinates: [0, 0],
+const groupByDate = (
+  storeRequests: StoreRequest[],
+): Record<string, StoreRequest[]> => {
+  return storeRequests.reduce(
+    (groups, storeRequest) => {
+      const date = new Date(storeRequest.createdAt).toLocaleDateString();
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+
+      groups[date].push(storeRequest);
+
+      return groups;
     },
-    operatingHours: [
-      { day: "Monday", open: "9:00", close: "18:00", closed: false },
-    ],
-    addedBy: "user1",
-    updatedBy: "user2",
-    socialLinks: ["http://example.com"],
-  },
-  {
-    _id: "2",
-    name: "Store 1",
-    address: "123 Main St",
-    tags: ["tag1", "tag2"],
-    thumbnail: "https://picsum.photos/400",
-    reviews: [],
-    loc: {
-      type: "Point",
-      coordinates: [0, 0],
-    },
-    operatingHours: [
-      { day: "Monday", open: "9:00", close: "18:00", closed: false },
-    ],
-    addedBy: "user1",
-    updatedBy: "user2",
-    socialLinks: ["http://example.com"],
-  },
-  {
-    _id: "3",
-    name: "Store 1",
-    address: "123 Main St",
-    tags: ["tag1", "tag2"],
-    thumbnail: "https://picsum.photos/400",
-    reviews: [],
-    loc: {
-      type: "Point",
-      coordinates: [0, 0],
-    },
-    operatingHours: [
-      { day: "Monday", open: "9:00", close: "18:00", closed: false },
-    ],
-    addedBy: "user1",
-    updatedBy: "user2",
-    socialLinks: ["http://example.com"],
-  },
-  {
-    _id: "4",
-    name: "Store 1",
-    address: "123 Main St",
-    tags: ["tag1", "tag2"],
-    thumbnail: "https://picsum.photos/400",
-    reviews: [],
-    loc: {
-      type: "Point",
-      coordinates: [0, 0],
-    },
-    operatingHours: [
-      { day: "Monday", open: "9:00", close: "18:00", closed: false },
-    ],
-    addedBy: "user1",
-    updatedBy: "user2",
-    socialLinks: ["http://example.com"],
-  },
-  {
-    _id: "5",
-    name: "Store 1",
-    address: "123 Main St",
-    tags: ["tag1", "tag2"],
-    thumbnail: "https://picsum.photos/400",
-    reviews: [],
-    loc: {
-      type: "Point",
-      coordinates: [0, 0],
-    },
-    operatingHours: [
-      { day: "Monday", open: "9:00", close: "18:00", closed: false },
-    ],
-    addedBy: "user1",
-    updatedBy: "user2",
-    socialLinks: ["http://example.com"],
-  },
-];
+    {} as Record<string, StoreRequest[]>,
+  );
+};
 
 export function StoreRequestSection() {
+  const {
+    data,
+    error,
+    isError,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useStoreRequests();
+
+  const scrollTargetRef = useIntersect((entry, observer) => {
+    observer.unobserve(entry.target);
+
+    if (hasNextPage && !isFetching && !isFetchingNextPage) {
+      void fetchNextPage();
+    }
+  });
+
+  if (isLoading) {
+    return <></>;
+  }
+
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
+
+  const allStoreRequests = data?.pages.flatMap((page) => page.data.data) || [];
+
+  const groupedStoreRequests = groupByDate(allStoreRequests);
+
+  const sortedDates = Object.keys(groupedStoreRequests).sort(
+    (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+  );
+
+  // 링크 없애기
+
+  // index 수정
+
   return (
-    <Link
-      underline="none"
-      component={RouterLink}
-      to={Uri.buildLinkUrl({
-        path: storeRequestPath,
-        pathVariables: { storerequestId: 12 },
-      })}
-    >
-      <Divider
-        sx={{
-          marginTop: "24px",
-          marginBottom: "24px",
-        }}
-      >
-        <Typography variant="subtitle1" color="text.secondary">
-          Today
-        </Typography>
-      </Divider>
-      <GridWrapper>
-        {stores.map((store) => (
-          <StoreRequestCard key={store._id} />
-        ))}
-      </GridWrapper>
-    </Link>
+    <>
+      {sortedDates.map((date) => (
+        <Box key={date}>
+          <Divider
+            sx={{
+              marginTop: "24px",
+              marginBottom: "24px",
+            }}
+          >
+            <Typography variant="subtitle1" color="text.secondary">
+              {date}
+            </Typography>
+          </Divider>
+          <GridWrapper>
+            {groupedStoreRequests[date].map((storeRequest: StoreRequest) => (
+              <Link
+                key={storeRequest._id}
+                underline="none"
+                component={RouterLink}
+                to={Uri.buildLinkUrl({
+                  path: storeRequestPath,
+                  pathVariables: { storerequestId: storeRequest._id },
+                })}
+              >
+                <StoreRequestCard storeRequest={storeRequest} />
+              </Link>
+            ))}
+          </GridWrapper>
+        </Box>
+      ))}
+      <Box ref={scrollTargetRef} />
+    </>
   );
 }
 

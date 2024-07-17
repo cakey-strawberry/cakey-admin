@@ -17,7 +17,7 @@ import { AuthEndpointSet } from "@common/service/api/endpoints";
 export class AuthRepository {
   static async signIn({ params }: SignInPayload) {
     return api.post<SignInResponse>({
-      endpointSet: AuthEndpointSet.Admin.signIn,
+      endpointSet: AuthEndpointSet.admin.signIn,
       body: params,
     });
   }
