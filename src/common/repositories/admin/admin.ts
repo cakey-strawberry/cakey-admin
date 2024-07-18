@@ -2,6 +2,7 @@ import { api } from "@common/service/api/api";
 import { AdminEndpointSet } from "@common/service/api/endpoints";
 
 import {
+  DeleteStoreRequestPayload,
   GetStoreRequestById,
   GetStoreRequestByIdResponse,
   GetStoreRequestsPayload,
@@ -20,6 +21,15 @@ export class AdminRepository {
     return api.get<StoreRequestsResponse>({
       endpointSet: AdminEndpointSet.storeRequest.getStoreRequests,
       queryParams: cursorId ? { cursorId, limit } : { limit },
+    });
+  }
+
+  static async deleteStoreRequest({
+    storeRequestId,
+  }: DeleteStoreRequestPayload) {
+    return api.delete({
+      endpointSet: AdminEndpointSet.storeRequest.deleteStoreRequest,
+      pathVariables: { storeRequestId },
     });
   }
 }

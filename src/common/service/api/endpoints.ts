@@ -15,6 +15,11 @@ export const AdminEndpointSet = {
       permission: "private",
       path: "/api/v1/admin/store-requests/:storeRequestId",
     },
+    deleteStoreRequest: {
+      method: "DELETE",
+      permission: "private",
+      path: "/api/v1/admin/store-requests/:storeRequestId",
+    },
     getStoreRequests: {
       method: "GET",
       permission: "private",

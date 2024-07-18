@@ -9,7 +9,7 @@ type UseStoreRequestParam = {
 
 export function useStoreRequest({ storeRequestId }: UseStoreRequestParam) {
   return useQuery({
-    queryKey: storeRequestKeys.storeRequestById(storeRequestId),
+    queryKey: storeRequestKeys.detail(storeRequestId),
     queryFn: () => {
       return AdminRepository.getStoreRequestById({
         storeRequestId,

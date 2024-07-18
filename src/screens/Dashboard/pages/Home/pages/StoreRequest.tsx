@@ -18,6 +18,8 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
+import { useSetAtom } from "jotai";
+import { Container as MapDiv } from "react-naver-maps";
 import { useHistory, useParams } from "react-router-dom";
 
 import { Map } from "@common/components/Map/Map";
@@ -25,20 +27,53 @@ import { PageHeader } from "@common/components/PageHeader/PageHeader";
 import { useScrollToTopOnMount } from "@common/hooks/useScrollToTopOnMount";
 import { PageLayout } from "@common/layouts/PageLayout";
 import { StoreRequestTypes } from "@common/repositories/admin/types";
+import { snackbarAtom } from "@common/store/atoms/snackbarAtom";
 
+import { useDeleteStoreRequest } from "../queries/useDeleteStoreRequest";
 import { useStoreRequest } from "../queries/useStoreRequest";
 
 export function StoreRequest() {
   useScrollToTopOnMount();
   const { storeRequestId } = useParams<{ storeRequestId: string }>();
-  const { data, isLoading, isError } = useStoreRequest({ storeRequestId });
-
-  const storeRequest = data?.data;
 
   const history = useHistory();
 
   const handleBackClick = () => {
     history.goBack();
+  };
+
+  const setSnackbar = useSetAtom(snackbarAtom);
+
+  const { data, isLoading, isError } = useStoreRequest({ storeRequestId });
+
+  const storeRequest = data?.data;
+
+  const { mutate } = useDeleteStoreRequest();
+
+  const handleDeleteRequest = () => {
+    mutate(
+      {
+        storeRequestId,
+      },
+      {
+        onSuccess: () => {
+          setSnackbar({
+            message: "스토어 요청이 삭제되었습니다.",
+            open: true,
+            severity: "success",
+          });
+
+          history.goBack();
+        },
+        onError: () => {
+          setSnackbar({
+            message: "스토어 요청 삭제에 실패했습니다.",
+            open: true,
+            severity: "warning",
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -64,31 +99,35 @@ export function StoreRequest() {
         </Button>
 
         {isLoading && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <CircularProgress />
-          </Box>
+          <GridContainer>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          </GridContainer>
         )}
 
         {isError && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100%",
-            }}
-          >
-            <Typography color="error">
-              에러가 발생했습니다. 다시 시도해주세요.
-            </Typography>
-          </Box>
+          <GridContainer>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <Typography color="error">
+                에러가 발생했습니다. 다시 시도해주세요.
+              </Typography>
+            </Box>
+          </GridContainer>
         )}
 
         {!isLoading && !isError && storeRequest && (
@@ -148,7 +187,14 @@ export function StoreRequest() {
                   />
                 </ListItem>
                 <ListItem>
-                  <Map coordinates={storeRequest.loc.coordinates} />
+                  <MapDiv
+                    style={{
+                      width: "100%",
+                      height: "300px",
+                    }}
+                  >
+                    <Map coordinates={storeRequest.loc.coordinates} />
+                  </MapDiv>
                 </ListItem>
               </List>
             </PaperBox>
@@ -256,7 +302,7 @@ export function StoreRequest() {
           <Button
             variant="outlined"
             color="primary"
-            onClick={handleBackClick}
+            onClick={handleDeleteRequest}
             sx={{
               marginRight: "16px",
             }}

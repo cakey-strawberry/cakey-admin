@@ -197,6 +197,14 @@ class APIClient {
       body: this.prepareBody(body),
     });
 
+    /**
+     * @NOTE
+     * 204 body가 없는 경우 json parsing을 할 수 없음
+     */
+    if (response.status === 204) {
+      return {} as TResponse;
+    }
+
     const responseData = await response.json();
 
     if (!response.ok) {

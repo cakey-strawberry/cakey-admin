@@ -59,3 +59,7 @@ export type StoreRequestsResponse = {
 export type GetStoreRequestByIdResponse = {
   data: StoreRequest;
 };
+
+export type DeleteStoreRequestPayload = {
+  storeRequestId: string;
+};

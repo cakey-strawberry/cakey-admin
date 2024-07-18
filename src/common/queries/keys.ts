@@ -1,7 +1,6 @@
 export const storeRequestKeys = {
-  storeRequest: ["storeRequest"] as const,
-  storeRequestById: (storeRequestId: string) =>
-    [...storeRequestKeys.storeRequest, storeRequestId] as const,
-  storeRequests: (cursorId?: string) =>
-    [...storeRequestKeys.storeRequest, cursorId] as const,
+  all: ["storeRequests"] as const,
+  list: () => [...storeRequestKeys.all, "list"] as const,
+  details: () => [...storeRequestKeys.all, "detail"] as const,
+  detail: (id: string) => [...storeRequestKeys.details(), id] as const,
 };

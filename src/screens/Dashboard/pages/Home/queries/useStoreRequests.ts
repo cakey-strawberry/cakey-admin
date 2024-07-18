@@ -5,7 +5,7 @@ import { AdminRepository } from "@common/repositories/admin/admin";
 
 export function useStoreRequests() {
   return useInfiniteQuery({
-    queryKey: storeRequestKeys.storeRequests(),
+    queryKey: storeRequestKeys.list(),
     queryFn: ({ pageParam = null }) => {
       return AdminRepository.getStoreRequests({
         cursorId: pageParam,
