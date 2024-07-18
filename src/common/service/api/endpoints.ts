@@ -10,6 +10,11 @@ export const AuthEndpointSet = {
 
 export const AdminEndpointSet = {
   storeRequest: {
+    getStoreRequestById: {
+      method: "GET",
+      permission: "private",
+      path: "/api/v1/admin/store-requests/:storeRequestId",
+    },
     getStoreRequests: {
       method: "GET",
       permission: "private",

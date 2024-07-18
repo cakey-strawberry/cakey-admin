@@ -16,59 +16,25 @@ import {
   Link,
   Button,
   Paper,
+  CircularProgress,
 } from "@mui/material";
-import { useEffect } from "react";
-import {
-  Container as MapDiv,
-  NaverMap,
-  Marker,
-  useNavermaps,
-} from "react-naver-maps";
-import { useHistory, Link as RouterLink } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
+import { Map } from "@common/components/Map/Map";
 import { PageHeader } from "@common/components/PageHeader/PageHeader";
+import { useScrollToTopOnMount } from "@common/hooks/useScrollToTopOnMount";
 import { PageLayout } from "@common/layouts/PageLayout";
+import { StoreRequestTypes } from "@common/repositories/admin/types";
 
-const storeRequest = {
-  name: "버터버터 베이커리",
-  address: "123 Main St, Anytown, USA",
-  tags: ["Tag1", "Tag2", "Tag3"],
-  thumbnail: "https://via.placeholder.com/150",
-  reviews: [
-    { comment: "Great place!", rating: 5 },
-    { comment: "Not bad.", rating: 3 },
-  ],
-  loc: { coordinates: [-123.123, 49.123] },
-  operatingHours: [
-    { day: "Monday", open: "09:00", close: "17:00", closed: false },
-    { day: "Tuesday", open: "09:00", close: "17:00", closed: false },
-  ],
-  createdBy: { name: "John Doe" },
-  socialLinks: ["http://example.com", "http://example.org"],
-};
-
-function MyMap() {
-  const navermaps = useNavermaps();
-
-  return (
-    <NaverMap
-      defaultCenter={new navermaps.LatLng(37.3595704, 127.105399)}
-      defaultZoom={15}
-    >
-      <Marker defaultPosition={new navermaps.LatLng(37.3595704, 127.105399)} />
-    </NaverMap>
-  );
-}
-
-function ScrollToTopOnMount() {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  return null;
-}
+import { useStoreRequest } from "../queries/useStoreRequest";
 
 export function StoreRequest() {
+  useScrollToTopOnMount();
+  const { storeRequestId } = useParams<{ storeRequestId: string }>();
+  const { data, isLoading, isError } = useStoreRequest({ storeRequestId });
+
+  const storeRequest = data?.data;
+
   const history = useHistory();
 
   const handleBackClick = () => {
@@ -77,8 +43,6 @@ export function StoreRequest() {
 
   return (
     <>
-      {" "}
-      <ScrollToTopOnMount />
       <PageLayout pageHeader={<PageHeader headerTitle="Store Request" />}>
         <Button
           sx={{
@@ -98,156 +62,189 @@ export function StoreRequest() {
         >
           뒤로 가기
         </Button>
-        <GridContainer>
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              이름
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemText
-                  primary={
-                    <Typography variant="h5" gutterBottom>
-                      {storeRequest.name}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            </List>
-          </PaperBox>
 
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              스토어 요청 타입
-            </Typography>
-            <List>
-              <ListItem>
-                <Chip color="primary" label={"CREATE"} />
-              </ListItem>
-            </List>
-          </PaperBox>
+        {isLoading && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        )}
 
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              주소
+        {isError && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <Typography color="error">
+              에러가 발생했습니다. 다시 시도해주세요.
             </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <StoreIcon />
-                </ListItemIcon>
-                <ListItemText primary={storeRequest.address} />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <LocationOnIcon />
-                </ListItemIcon>
-                <ListItemText
-                  primary={`Lat: ${storeRequest.loc.coordinates[1]}, Lng: ${storeRequest.loc.coordinates[0]}`}
-                />
-              </ListItem>
-              <ListItem>
-                <MapDiv
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                  }}
-                >
-                  <MyMap />
-                </MapDiv>
-              </ListItem>
-            </List>
-          </PaperBox>
+          </Box>
+        )}
 
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              썸네일
-            </Typography>
-            <List>
-              <ListItem>
-                <StoreImage
-                  src={storeRequest.thumbnail}
-                  alt={storeRequest.name}
-                />
-              </ListItem>
-            </List>
-          </PaperBox>
+        {!isLoading && !isError && storeRequest && (
+          <GridContainer>
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                이름
+              </Typography>
+              <List>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      <Typography variant="h5" gutterBottom>
+                        {storeRequest.name}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              </List>
+            </PaperBox>
 
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              운영 시간
-            </Typography>
-            <List>
-              {storeRequest.operatingHours.map((hour, index) => (
-                <ListItem key={index}>
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                스토어 요청 타입
+              </Typography>
+              <List>
+                <ListItem>
+                  <Chip
+                    color={
+                      storeRequest.type === StoreRequestTypes.CREATE
+                        ? "primary"
+                        : "secondary"
+                    }
+                    label={storeRequest.type}
+                  />
+                </ListItem>
+              </List>
+            </PaperBox>
+
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                주소
+              </Typography>
+              <List>
+                <ListItem>
                   <ListItemIcon>
-                    <AccessTimeIcon />
+                    <StoreIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={storeRequest.address} />
+                </ListItem>
+                <ListItem>
+                  <ListItemIcon>
+                    <LocationOnIcon />
                   </ListItemIcon>
                   <ListItemText
-                    primary={`${hour.day}: ${hour.closed ? "Closed" : `${hour.open} - ${hour.close}`}`}
+                    primary={`Lat: ${storeRequest.loc.coordinates[1]}, Lng: ${storeRequest.loc.coordinates[0]}`}
                   />
                 </ListItem>
-              ))}
-            </List>
-          </PaperBox>
-
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              요청한 사람
-            </Typography>
-            <List>
-              <ListItem>
-                <ListItemIcon>
-                  <Avatar />
-                </ListItemIcon>
-                <ListItemText primary={storeRequest.createdBy.name} />
-              </ListItem>
-            </List>
-          </PaperBox>
-
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              외부 링크
-            </Typography>
-            <List>
-              {storeRequest.socialLinks.map((link, index) => (
-                <ListItem key={index}>
-                  <ListItemIcon>
-                    <LinkIcon />
-                  </ListItemIcon>
-                  <Link
-                    component={RouterLink}
-                    rel="noopener noreferrer"
-                    to={{ pathname: link }}
-                    underline="none"
-                    target="_blank"
-                  >
-                    <ListItemText primary={link} />
-                  </Link>
+                <ListItem>
+                  <Map coordinates={storeRequest.loc.coordinates} />
                 </ListItem>
-              ))}
-            </List>
-          </PaperBox>
+              </List>
+            </PaperBox>
 
-          <PaperBox variant="outlined">
-            <Typography variant="h6" gutterBottom>
-              태그
-            </Typography>
-            <List>
-              <ListItem>
-                {storeRequest.tags.map((tag, index) => (
-                  <Chip
-                    key={index}
-                    label={tag}
-                    sx={{
-                      marginRight: "8px",
-                    }}
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                썸네일
+              </Typography>
+              <List>
+                <ListItem>
+                  <StoreImage
+                    src={storeRequest.thumbnail}
+                    alt={storeRequest.name}
                   />
+                </ListItem>
+              </List>
+            </PaperBox>
+
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                운영 시간
+              </Typography>
+              <List>
+                {storeRequest.operatingHours.map((hour, index) => (
+                  <ListItem key={index}>
+                    <ListItemIcon>
+                      <AccessTimeIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={`${hour.day}: ${
+                        hour.closed ? "Closed" : `${hour.open} - ${hour.close}`
+                      }`}
+                    />
+                  </ListItem>
                 ))}
-              </ListItem>
-            </List>
-          </PaperBox>
-        </GridContainer>
+              </List>
+            </PaperBox>
+
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                요청한 사람
+              </Typography>
+              <List>
+                <ListItem>
+                  <ListItemIcon>
+                    <Avatar />
+                  </ListItemIcon>
+                  <ListItemText primary={storeRequest.createdBy.name} />
+                </ListItem>
+              </List>
+            </PaperBox>
+
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                외부 링크
+              </Typography>
+              <List>
+                {storeRequest.socialLinks?.map((link, index) => (
+                  <ListItem key={index}>
+                    <ListItemIcon>
+                      <LinkIcon />
+                    </ListItemIcon>
+                    <Link
+                      href={link}
+                      rel="noopener noreferrer"
+                      underline="none"
+                      target="_blank"
+                    >
+                      <ListItemText primary={link} />
+                    </Link>
+                  </ListItem>
+                ))}
+              </List>
+            </PaperBox>
+
+            <PaperBox variant="outlined">
+              <Typography variant="h6" gutterBottom>
+                태그
+              </Typography>
+              <List>
+                <ListItem>
+                  {storeRequest.tags?.map((tag, index) => (
+                    <Chip
+                      key={index}
+                      label={tag}
+                      sx={{
+                        marginRight: "8px",
+                      }}
+                    />
+                  ))}
+                </ListItem>
+              </List>
+            </PaperBox>
+          </GridContainer>
+        )}
+
         <Box
           sx={{
             display: "flex",

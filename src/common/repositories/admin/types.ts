@@ -7,7 +7,7 @@ export enum StoreRequestTypes {
 
 export interface Location {
   type: "Point";
-  coordinates: number[];
+  coordinates: [number, number];
 }
 
 export interface OperatingHour {
@@ -40,9 +40,22 @@ export interface StoreRequest {
   updatedAt: Date;
 }
 
+export type GetStoreRequestById = {
+  storeRequestId: string;
+};
+
+export type GetStoreRequestsPayload = {
+  cursorId: string | null;
+  limit: number;
+};
+
 export type StoreRequestsResponse = {
   data: {
     data: StoreRequest[];
     pagination: CursorPagination;
   };
+};
+
+export type GetStoreRequestByIdResponse = {
+  data: StoreRequest;
 };
