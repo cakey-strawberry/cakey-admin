@@ -29,9 +29,10 @@ import { PageLayout } from "@common/layouts/PageLayout";
 import { StoreRequestTypes } from "@common/repositories/admin/types";
 import { snackbarAtom } from "@common/store/atoms/snackbarAtom";
 
-import { useCreateStores } from "../queries/useCreateStores";
+import { useCreateStore } from "../queries/useCreateStore";
 import { useDeleteStoreRequest } from "../queries/useDeleteStoreRequest";
 import { useStoreRequest } from "../queries/useStoreRequest";
+import { useUpdateStore } from "../queries/useUpdateStore";
 
 export function StoreRequest() {
   useScrollToTopOnMount();
@@ -50,7 +51,20 @@ export function StoreRequest() {
   const storeRequest = data?.data;
 
   const deleteQuery = useDeleteStoreRequest();
-  const createQuery = useCreateStores();
+  const createQuery = useCreateStore();
+  const updateQuery = useUpdateStore();
+
+  const handleClickMainButton = () => {
+    if (!storeRequest) {
+      return;
+    }
+
+    if (storeRequest.type === StoreRequestTypes.CREATE) {
+      handleCreateStore();
+    } else {
+      handleUpdateStore();
+    }
+  };
 
   const handleCreateStore = () => {
     if (!storeRequest) {
@@ -64,6 +78,7 @@ export function StoreRequest() {
           name: storeRequest.name,
           address: storeRequest.address,
           loc: storeRequest.loc,
+          reviews: [],
           thumbnail: storeRequest.thumbnail,
           operatingHours: storeRequest.operatingHours,
           socialLinks: storeRequest.socialLinks,
@@ -84,6 +99,47 @@ export function StoreRequest() {
         onError: () => {
           setSnackbar({
             message: "스토어 생성에 실패했습니다.",
+            open: true,
+            severity: "warning",
+          });
+        },
+      },
+    );
+  };
+
+  const handleUpdateStore = () => {
+    if (!storeRequest || !storeRequest.storeId) {
+      return;
+    }
+
+    updateQuery.mutate(
+      {
+        storeId: storeRequest.storeId,
+        storeRequestId,
+        storeData: {
+          name: storeRequest.name,
+          address: storeRequest.address,
+          loc: storeRequest.loc,
+          thumbnail: storeRequest.thumbnail,
+          operatingHours: storeRequest.operatingHours,
+          socialLinks: storeRequest.socialLinks,
+          updatedBy: storeRequest.createdBy._id,
+          tags: storeRequest.tags,
+        },
+      },
+      {
+        onSuccess: () => {
+          setSnackbar({
+            message: "스토어 요청 업데이트에 성공하였습니다.",
+            open: true,
+            severity: "success",
+          });
+
+          history.goBack();
+        },
+        onError: () => {
+          setSnackbar({
+            message: "스토어 요청 업데이트에 실패했습니다.",
             open: true,
             severity: "warning",
           });
@@ -343,7 +399,6 @@ export function StoreRequest() {
         >
           <Button
             variant="outlined"
-            color="primary"
             onClick={handleDeleteRequest}
             sx={{
               marginRight: "16px",
@@ -354,9 +409,11 @@ export function StoreRequest() {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleCreateStore}
+            onClick={handleClickMainButton}
           >
-            스토어 생성하기
+            {storeRequest?.type === StoreRequestTypes.CREATE
+              ? "스토어 생성하기"
+              : "스토어 업데이트하기"}
           </Button>
         </Box>
       </PageLayout>

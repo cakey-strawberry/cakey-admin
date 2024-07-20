@@ -1,6 +1,7 @@
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useSetAtom } from "jotai";
+import { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useIntersect } from "@common/hooks/useIntersect";
@@ -52,27 +53,31 @@ export function StoreRequestSection() {
     }
   });
 
-  if (isLoading) {
-    return <></>;
-  }
-
-  if (isError) {
-    setSnackbar({
-      message: "스토어 요청을 불러오는데 실패했습니다.",
-      open: true,
-      severity: "warning",
-    });
-
-    return <Typography>Error: {error.message}</Typography>;
-  }
+  useEffect(() => {
+    if (isError) {
+      setSnackbar({
+        message: "스토어 요청을 불러오는데 실패했습니다.",
+        open: true,
+        severity: "warning",
+      });
+    }
+  }, [isError, setSnackbar]);
 
   const allStoreRequests = data?.pages.flatMap((page) => page.data.data) || [];
 
   const groupedStoreRequests = groupByDate(allStoreRequests);
 
   const sortedDates = Object.keys(groupedStoreRequests).sort(
-    (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+    (a, b) => new Date(a).getTime() - new Date(b).getTime(),
   );
+
+  if (isLoading) {
+    return <></>;
+  }
+
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
 
   return (
     <>

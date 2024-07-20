@@ -30,5 +30,10 @@ export const AdminEndpointSet = {
       permission: "private",
       path: "/api/v1/admin/stores",
     },
+    updateStore: {
+      method: "PATCH",
+      permission: "private",
+      path: "/api/v1/admin/stores/:storeId",
+    },
   },
 } as const;

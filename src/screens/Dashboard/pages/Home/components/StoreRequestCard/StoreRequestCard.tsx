@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
   CardMedia,
@@ -8,7 +9,10 @@ import {
   styled,
 } from "@mui/material";
 
-import type { StoreRequest } from "@common/repositories/admin/types";
+import {
+  StoreRequestTypes,
+  type StoreRequest,
+} from "@common/repositories/admin/types";
 
 type StoreRequestCardProps = {
   storeRequest: StoreRequest;
@@ -18,14 +22,29 @@ export function StoreRequestCard({ storeRequest }: StoreRequestCardProps) {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Chip
-          label={storeRequest.type}
-          size="small"
-          sx={{ marginBottom: "8px" }}
-        />
-        <Typography variant="h5" component="div" sx={{ marginBottom: "8px" }}>
-          {storeRequest.name}
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h5" component="div" sx={{ marginBottom: "8px" }}>
+            {storeRequest.name}
+          </Typography>
+          <Chip
+            color={
+              storeRequest.type === StoreRequestTypes.CREATE
+                ? "primary"
+                : "secondary"
+            }
+            label={storeRequest.type}
+            size="small"
+            sx={{
+              marginBottom: "8px",
+            }}
+          />
+        </Box>
 
         <EllipsisTypography color="text.secondary">
           {storeRequest.address}

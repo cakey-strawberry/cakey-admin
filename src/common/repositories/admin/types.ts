@@ -5,33 +5,61 @@ export enum StoreRequestTypes {
   UPDATE = "update",
 }
 
-export type Location = {
+type Location = {
   type: "Point";
   coordinates: [number, number];
 };
 
-export type OperatingHour = {
+type OperatingHour = {
   day: string;
   open?: string;
   close?: string;
   closed?: boolean;
 };
 
-export type CreatedBy = {
+type CreatedBy = {
   _id: string;
   oauthId: string;
   name: string;
   avatar: string;
 };
 
+type Review = {
+  _id: string;
+  reviewer: string;
+  comment: string;
+  images: string[];
+  rating: number;
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type Store = {
+  _id: string;
+  name: string;
+  address: string;
+  tags?: string[];
+  thumbnail: string;
+  reviews: Review[];
+  loc: Location;
+  operatingHours: OperatingHour[];
+  addedBy: string;
+  updatedBy?: string;
+  socialLinks?: string[];
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type StoreRequest = {
   _id: string;
+  storeId?: string;
   type: StoreRequestTypes;
   name: string;
   address: string;
   tags?: string[];
   thumbnail: string;
-  reviews: unknown[];
+  reviews: Review[];
   loc: Location;
   operatingHours: OperatingHour[];
   createdBy: CreatedBy;
@@ -66,19 +94,28 @@ export type DeleteStoreRequestPayload = {
 
 export type DeleteStoreResponse = Record<string, never>;
 
-export type CreateStoresRequestPayload = {
+type CreateStoreData = Omit<
+  Store,
+  "_id" | "updatedBy" | "createdAt" | "updatedAt"
+>;
+
+export type CreateStoreRequestPayload = {
   storeRequestId: string;
   storeData: CreateStoreData;
 };
 
-type CreateStoreData = {
-  name: string;
-  address: string;
-  tags?: string[];
-  thumbnail: string;
-  reviews?: string[];
-  loc: Location;
-  operatingHours: OperatingHour[];
-  addedBy: string;
-  socialLinks?: string[];
+export type CreateStoreResponse = {
+  data: CreateStoreData;
+};
+
+type UpdateStoreData = Partial<Store>;
+
+export type UpdateStoreRequestPayload = {
+  storeId: string;
+  storeRequestId: string;
+  storeData: UpdateStoreData;
+};
+
+export type UpdateStoreResponse = {
+  data: UpdateStoreData;
 };

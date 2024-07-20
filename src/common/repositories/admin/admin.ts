@@ -2,13 +2,16 @@ import { api } from "@common/service/api/api";
 import { AdminEndpointSet } from "@common/service/api/endpoints";
 
 import {
-  CreateStoresRequestPayload,
+  CreateStoreRequestPayload,
+  CreateStoreResponse,
   DeleteStoreRequestPayload,
   DeleteStoreResponse,
   GetStoreRequestById,
   GetStoreRequestByIdResponse,
   GetStoreRequestsPayload,
   StoreRequestsResponse,
+  UpdateStoreRequestPayload,
+  UpdateStoreResponse,
 } from "./types";
 
 export class AdminRepository {
@@ -35,12 +38,27 @@ export class AdminRepository {
     });
   }
 
-  static async createStores({
+  static async createStore({
     storeRequestId,
     storeData,
-  }: CreateStoresRequestPayload) {
-    return api.post({
+  }: CreateStoreRequestPayload) {
+    return api.post<CreateStoreResponse>({
       endpointSet: AdminEndpointSet.storeRequest.createStores,
+      body: {
+        storeRequestId,
+        storeData,
+      },
+    });
+  }
+
+  static async updateStore({
+    storeId,
+    storeRequestId,
+    storeData,
+  }: UpdateStoreRequestPayload) {
+    return api.put<UpdateStoreResponse>({
+      endpointSet: AdminEndpointSet.storeRequest.updateStore,
+      pathVariables: { storeId },
       body: {
         storeRequestId,
         storeData,
