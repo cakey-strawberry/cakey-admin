@@ -1,11 +1,13 @@
 import { Box, Divider, Link, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useSetAtom } from "jotai";
 import { Link as RouterLink } from "react-router-dom";
 
 import { useIntersect } from "@common/hooks/useIntersect";
 import { StoreRequest } from "@common/repositories/admin/types";
 import { storeRequestPath } from "@common/router/paths/paths";
 import { Uri } from "@common/service/api/url";
+import { snackbarAtom } from "@common/store/atoms/snackbarAtom";
 
 import { useStoreRequests } from "../../queries/useStoreRequests";
 import { StoreRequestCard } from "../StoreRequestCard/StoreRequestCard";
@@ -40,6 +42,8 @@ export function StoreRequestSection() {
     fetchNextPage,
   } = useStoreRequests();
 
+  const setSnackbar = useSetAtom(snackbarAtom);
+
   const scrollTargetRef = useIntersect((entry, observer) => {
     observer.unobserve(entry.target);
 
@@ -53,6 +57,12 @@ export function StoreRequestSection() {
   }
 
   if (isError) {
+    setSnackbar({
+      message: "스토어 요청을 불러오는데 실패했습니다.",
+      open: true,
+      severity: "warning",
+    });
+
     return <Typography>Error: {error.message}</Typography>;
   }
 
@@ -63,10 +73,6 @@ export function StoreRequestSection() {
   const sortedDates = Object.keys(groupedStoreRequests).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime(),
   );
-
-  // 링크 없애기
-
-  // index 수정
 
   return (
     <>

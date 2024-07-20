@@ -29,6 +29,7 @@ import { PageLayout } from "@common/layouts/PageLayout";
 import { StoreRequestTypes } from "@common/repositories/admin/types";
 import { snackbarAtom } from "@common/store/atoms/snackbarAtom";
 
+import { useCreateStores } from "../queries/useCreateStores";
 import { useDeleteStoreRequest } from "../queries/useDeleteStoreRequest";
 import { useStoreRequest } from "../queries/useStoreRequest";
 
@@ -48,10 +49,51 @@ export function StoreRequest() {
 
   const storeRequest = data?.data;
 
-  const { mutate } = useDeleteStoreRequest();
+  const deleteQuery = useDeleteStoreRequest();
+  const createQuery = useCreateStores();
+
+  const handleCreateStore = () => {
+    if (!storeRequest) {
+      return;
+    }
+
+    createQuery.mutate(
+      {
+        storeRequestId,
+        storeData: {
+          name: storeRequest.name,
+          address: storeRequest.address,
+          loc: storeRequest.loc,
+          thumbnail: storeRequest.thumbnail,
+          operatingHours: storeRequest.operatingHours,
+          socialLinks: storeRequest.socialLinks,
+          addedBy: storeRequest.createdBy._id,
+          tags: storeRequest.tags,
+        },
+      },
+      {
+        onSuccess: () => {
+          setSnackbar({
+            message: "스토어가 생성되었습니다.",
+            open: true,
+            severity: "success",
+          });
+
+          history.goBack();
+        },
+        onError: () => {
+          setSnackbar({
+            message: "스토어 생성에 실패했습니다.",
+            open: true,
+            severity: "warning",
+          });
+        },
+      },
+    );
+  };
 
   const handleDeleteRequest = () => {
-    mutate(
+    deleteQuery.mutate(
       {
         storeRequestId,
       },
@@ -309,7 +351,11 @@ export function StoreRequest() {
           >
             스토어 요청 삭제하기
           </Button>
-          <Button variant="contained" color="primary" onClick={handleBackClick}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateStore}
+          >
             스토어 생성하기
           </Button>
         </Box>

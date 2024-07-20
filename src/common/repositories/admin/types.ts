@@ -5,26 +5,26 @@ export enum StoreRequestTypes {
   UPDATE = "update",
 }
 
-export interface Location {
+export type Location = {
   type: "Point";
   coordinates: [number, number];
-}
+};
 
-export interface OperatingHour {
+export type OperatingHour = {
   day: string;
   open?: string;
   close?: string;
   closed?: boolean;
-}
+};
 
-export interface CreatedBy {
+export type CreatedBy = {
   _id: string;
   oauthId: string;
   name: string;
   avatar: string;
-}
+};
 
-export interface StoreRequest {
+export type StoreRequest = {
   _id: string;
   type: StoreRequestTypes;
   name: string;
@@ -38,7 +38,7 @@ export interface StoreRequest {
   socialLinks?: string[];
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 export type GetStoreRequestById = {
   storeRequestId: string;
@@ -62,4 +62,23 @@ export type GetStoreRequestByIdResponse = {
 
 export type DeleteStoreRequestPayload = {
   storeRequestId: string;
+};
+
+export type DeleteStoreResponse = Record<string, never>;
+
+export type CreateStoresRequestPayload = {
+  storeRequestId: string;
+  storeData: CreateStoreData;
+};
+
+type CreateStoreData = {
+  name: string;
+  address: string;
+  tags?: string[];
+  thumbnail: string;
+  reviews?: string[];
+  loc: Location;
+  operatingHours: OperatingHour[];
+  addedBy: string;
+  socialLinks?: string[];
 };

@@ -25,5 +25,10 @@ export const AdminEndpointSet = {
       permission: "private",
       path: "/api/v1/admin/store-requests",
     },
+    createStores: {
+      method: "POST",
+      permission: "private",
+      path: "/api/v1/admin/stores",
+    },
   },
 } as const;
