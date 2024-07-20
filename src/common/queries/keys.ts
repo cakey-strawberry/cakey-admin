@@ -1,3 +1,7 @@
+export const stasticsKeys = {
+  all: ["stastics"] as const,
+};
+
 export const storeRequestKeys = {
   all: ["storeRequests"] as const,
   list: () => [...storeRequestKeys.all, "list"] as const,

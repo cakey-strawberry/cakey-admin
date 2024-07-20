@@ -9,6 +9,13 @@ export const AuthEndpointSet = {
 } as const;
 
 export const AdminEndpointSet = {
+  admin: {
+    getStastics: {
+      method: "GET",
+      permission: "private",
+      path: "/api/v1/admin/stastics",
+    },
+  },
   storeRequest: {
     getStoreRequestById: {
       method: "GET",

@@ -119,3 +119,11 @@ export type UpdateStoreRequestPayload = {
 export type UpdateStoreResponse = {
   data: UpdateStoreData;
 };
+
+export type GetStasticsResponse = {
+  data: {
+    userCount: number;
+    storeCount: number;
+    storeRequestCount: number;
+  };
+};

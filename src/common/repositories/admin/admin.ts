@@ -6,6 +6,7 @@ import {
   CreateStoreResponse,
   DeleteStoreRequestPayload,
   DeleteStoreResponse,
+  GetStasticsResponse,
   GetStoreRequestById,
   GetStoreRequestByIdResponse,
   GetStoreRequestsPayload,
@@ -63,6 +64,12 @@ export class AdminRepository {
         storeRequestId,
         storeData,
       },
+    });
+  }
+
+  static async getStastics() {
+    return api.get<GetStasticsResponse>({
+      endpointSet: AdminEndpointSet.admin.getStastics,
     });
   }
 }
