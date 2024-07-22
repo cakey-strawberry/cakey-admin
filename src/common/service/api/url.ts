@@ -39,10 +39,11 @@ export class Uri {
     pathVariables = null,
     queryParams = null,
   }: BuildUrlOptions): string {
+    const host = import.meta.env.VITE_VERCEL_URL;
     const interpolatedPath = this.interpolatePath(path, pathVariables);
     const queryString = this.buildQueryParams(queryParams);
 
-    let url = `${interpolatedPath}`;
+    let url = host ? `https://${host}${interpolatedPath}` : interpolatedPath;
 
     if (queryString) {
       url += `?${queryString}`;
