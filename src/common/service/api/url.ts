@@ -43,7 +43,7 @@ export class Uri {
     const interpolatedPath = this.interpolatePath(path, pathVariables);
     const queryString = this.buildQueryParams(queryParams);
 
-    let url = host ? `https://${host}${interpolatedPath}` : interpolatedPath;
+    let url = host ? `${host}${interpolatedPath}` : interpolatedPath;
 
     if (queryString) {
       url += `?${queryString}`;
