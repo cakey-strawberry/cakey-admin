@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Card,
   CardContent,
   CardMedia,
@@ -8,39 +9,68 @@ import {
   styled,
 } from "@mui/material";
 
-export function StoreRequestCard() {
+import {
+  StoreRequestTypes,
+  type StoreRequest,
+} from "@common/repositories/admin/types";
+
+type StoreRequestCardProps = {
+  storeRequest: StoreRequest;
+};
+
+export function StoreRequestCard({ storeRequest }: StoreRequestCardProps) {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Chip label="Create" size="small" sx={{ marginBottom: "8px" }} />
-        <Typography variant="h5" component="div" sx={{ marginBottom: "8px" }}>
-          버터버터 베이커리
-        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h5" component="div" sx={{ marginBottom: "8px" }}>
+            {storeRequest.name}
+          </Typography>
+          <Chip
+            color={
+              storeRequest.type === StoreRequestTypes.CREATE
+                ? "primary"
+                : "secondary"
+            }
+            label={storeRequest.type}
+            size="small"
+            sx={{
+              marginBottom: "8px",
+            }}
+          />
+        </Box>
 
         <EllipsisTypography color="text.secondary">
-          서울 특별시 뭐시기 저시기 서울 특별시 뭐시기 저시기서울 특별시 뭐시기
-          저시기서울 특별시 뭐시기 저시기서울 특별시 뭐시기 저시기
+          {storeRequest.address}
         </EllipsisTypography>
 
         <CardMedia
           sx={{ height: 140, borderRadius: "8px", marginBottom: "8px" }}
-          image="https://picsum.photos/400"
-          title="green iguana"
+          image={storeRequest.thumbnail}
+          title={storeRequest.name}
         />
         <CardInfoWrapper>
-          <DateInfoWrapper>
-            <Typography variant="body2" color="text.secondary">
-              2023 / 07 / 04
-            </Typography>
-          </DateInfoWrapper>
           <UserInfoWrapper>
             <Avatar
-              alt="User Avatar"
-              src="https://randomuser.me/api/portraits/men/41.jpg"
+              alt={storeRequest.createdBy.name}
+              src={storeRequest.createdBy.avatar}
               sx={{ width: 24, height: 24, marginRight: 1 }}
             />
-            <Typography variant="body2" color="text.secondary">
-              사용자 이름
+            <Typography
+              sx={{
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+              }}
+              variant="body2"
+              color="text.secondary"
+            >
+              {storeRequest.createdBy.name}
             </Typography>
           </UserInfoWrapper>
         </CardInfoWrapper>
@@ -62,12 +92,6 @@ const EllipsisTypography = styled(Typography)(({ theme }) => ({
 const UserInfoWrapper = styled("div")({
   display: "flex",
   height: "100%",
-  alignItems: "center",
-  flexDirection: "row",
-});
-
-const DateInfoWrapper = styled("div")({
-  display: "flex",
   alignItems: "center",
   flexDirection: "row",
 });

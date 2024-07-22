@@ -6,4 +6,4 @@ export const storesPath = `${dashboardPath}/stores`;
 export const usersPath = `${dashboardPath}/users`;
 export const reviewsPath = `${dashboardPath}/reviews`;
 
-export const storeRequestPath = `${homePath}/storerequest/:storerequestId`;
+export const storeRequestPath = `${homePath}/storerequest/:storeRequestId`;
