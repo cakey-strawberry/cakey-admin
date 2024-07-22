@@ -3,7 +3,6 @@ name: git push into another repo to deploy to vercel
 on:
   push:
     branches:
-      - main
       - dev
   workflow_dispatch:
 
@@ -28,6 +27,6 @@ jobs:
           destination-repository-name: "CAKEY_ADMIN_MIRROR"
           user-email: ${{ secrets.OFFICIAL_ACCOUNT_EMAIL }}
           commit-message: "Auto commit - Workflow Run ${{ github.run_number }} - Date: ${{ steps.date.outputs.date }}"
-          target-branch: main
+          target-branch: dev
       - name: Test get variable exported by push-to-another-repository
         run: echo $DESTINATION_CLONED_DIRECTORY
