@@ -39,11 +39,10 @@ export class Uri {
     pathVariables = null,
     queryParams = null,
   }: BuildUrlOptions): string {
-    const host = import.meta.env.VITE_API_URL;
     const interpolatedPath = this.interpolatePath(path, pathVariables);
     const queryString = this.buildQueryParams(queryParams);
 
-    let url = `${host}${interpolatedPath}`;
+    let url = `${interpolatedPath}`;
 
     if (queryString) {
       url += `?${queryString}`;
