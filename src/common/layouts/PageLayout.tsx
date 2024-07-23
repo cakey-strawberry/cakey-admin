@@ -21,6 +21,7 @@ const Wrapper = styled("div")({
   flexDirection: "column",
   padding: "24px",
   backgroundColor: "#f9f9f9",
+  minHeight: "100vh",
 });
 
 const PageHeaderWrapper = styled("div")({
@@ -31,5 +32,4 @@ const PageHeaderWrapper = styled("div")({
 const ChildrenWrapper = styled("div")({
   flex: 1,
   width: "100%",
-  minHeight: "100vh",
 });

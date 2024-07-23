@@ -1,4 +1,10 @@
-import { Box, Divider, Link, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Link,
+  Typography,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
@@ -43,6 +49,12 @@ export function StoreRequestSection() {
     fetchNextPage,
   } = useStoreRequests();
 
+  useEffect(() => {
+    if (isLoading) {
+      window.scrollTo(0, 0);
+    }
+  }, [isLoading]);
+
   const setSnackbar = useSetAtom(snackbarAtom);
 
   const scrollTargetRef = useIntersect((entry, observer) => {
@@ -72,7 +84,17 @@ export function StoreRequestSection() {
   );
 
   if (isLoading) {
-    return <></>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "1rem",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (isError) {
@@ -111,6 +133,15 @@ export function StoreRequestSection() {
         </Box>
       ))}
       <Box ref={scrollTargetRef} />
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "1rem",
+        }}
+      >
+        {(isFetching || isFetchingNextPage) && <CircularProgress />}
+      </Box>
     </>
   );
 }
