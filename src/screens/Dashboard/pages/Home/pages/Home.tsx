@@ -15,7 +15,7 @@ export function Home() {
 
   return (
     <>
-      <PageLayout pageHeader={<PageHeader headerTitle="Dashboard" />}>
+      <PageLayout pageHeader={<PageHeader headerTitle={"Dashboard"} />}>
         <StasticsSection />
         <Wrapper variant="outlined">
           <SectionWrapper>

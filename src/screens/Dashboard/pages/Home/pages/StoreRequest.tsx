@@ -18,6 +18,7 @@ import {
   Paper,
   CircularProgress,
 } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { Container as MapDiv } from "react-naver-maps";
 import { useHistory, useParams } from "react-router-dom";
@@ -26,6 +27,7 @@ import { Map } from "@common/components/Map/Map";
 import { PageHeader } from "@common/components/PageHeader/PageHeader";
 import { useScrollToTopOnMount } from "@common/hooks/useScrollToTopOnMount";
 import { PageLayout } from "@common/layouts/PageLayout";
+import { storeRequestKeys } from "@common/queries/keys";
 import { StoreRequestTypes } from "@common/repositories/admin/types";
 import { snackbarAtom } from "@common/store/atoms/snackbarAtom";
 
@@ -36,6 +38,8 @@ import { useUpdateStore } from "../queries/useUpdateStore";
 
 export function StoreRequest() {
   useScrollToTopOnMount();
+
+  const queryClient = useQueryClient();
   const { storeRequestId } = useParams<{ storeRequestId: string }>();
 
   const history = useHistory();
@@ -155,6 +159,9 @@ export function StoreRequest() {
       },
       {
         onSuccess: () => {
+          //resetQueries
+          queryClient.removeQueries({ queryKey: storeRequestKeys.list() });
+
           setSnackbar({
             message: "스토어 요청이 삭제되었습니다.",
             open: true,
